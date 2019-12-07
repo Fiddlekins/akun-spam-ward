@@ -1,0 +1,6 @@
+.idea
+node_modules
+spam
+credentials.json
+wardedStories.json
+ward.log
