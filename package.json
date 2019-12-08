@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node --experimental-modules index.js",
     "start-log": "node --experimental-modules index.js >> ward.log",
+    "start-dry": "node --experimental-modules index.js --dry",
+    "build": "node --experimental-modules build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

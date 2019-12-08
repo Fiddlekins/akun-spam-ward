@@ -1,5 +1,6 @@
 .idea
 node_modules
+dest
 spam
 credentials.json
 wardedStories.json

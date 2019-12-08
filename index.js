@@ -6,6 +6,8 @@ import {fileURLToPath} from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const isDryRun = process.argv.includes('--dry');
+
 function log(message) {
 	console.log(`[${Date.now()}] ${message}`);
 }
@@ -14,26 +16,36 @@ async function getSpamPatterns() {
 	const inputDir = path.join(__dirname, 'spam');
 
 	const filenames = await fs.readdir(inputDir);
-	const fileContents = await Promise.all(filenames.map((filename) => {
-			return fs.readFile(path.join(inputDir, filename), 'utf8');
+	return Promise.all(filenames.map(async (filename) => {
+			const content = await fs.readFile(path.join(inputDir, filename), 'utf8');
+			return {
+				name: filename,
+				pattern: new RegExp(escapeRegExp(content))
+			}
 		})
 	);
-	return fileContents.map((content) => {
-		return new RegExp(escapeRegExp(content));
-	});
 }
 
 async function ward(akun, storyId, spamPatterns) {
 	const handleChatNode = (node) => {
 		for (const spamPattern of spamPatterns) {
-			if (node.body && spamPattern.test(node.body)) {
-				log(`Ward caught node id "${node.id}" posted by user "${node.username}" with user id "${node.userId}" and body starting:\n${node.body.slice(0, 100)}`);
-				akun.ban(storyId, node.id).catch(log);
-				akun.deleteChatNodeFromStory(storyId, node.id).catch(log);
+			if (node.body && spamPattern.pattern.test(node.body)) {
+				log(`Ward pattern "${spamPattern.name}" caught node id "${node.id}" posted by user "${node.username}" with user id "${node.userId}" and body starting:\n${node.body.slice(0, 100)}`);
+				if (!isDryRun) {
+					akun.ban(storyId, node.id).catch(log);
+					akun.deleteChatNodeFromStory(storyId, node.id).catch(log);
+				}
+				break;
 			}
 		}
 	};
-	const client = await akun.join(storyId);
+	let client;
+	try {
+		client = await akun.join(storyId);
+	} catch (err) {
+		log(`Unable to join story with id ${storyId} due to:\n${err}\n\n(Is the story ID listed in wardedStories.json correct?)`);
+		return;
+	}
 	client.chatThread.on('chat', handleChatNode);
 	client.chatThread.history.nodes.forEach(handleChatNode);
 }
@@ -56,6 +68,9 @@ async function init() {
 		ward(akun, storyId, spamPatterns).catch(log);
 	}
 	log(`Wards raised on stories: ${wardedStories.join(', ')}`);
+	if (isDryRun) {
+		log(`Operating in dry run mode: logs indicate which posts would be caught by current spam patterns but no bans or deletions are enacted`);
+	}
 }
 
 init().catch(log);
