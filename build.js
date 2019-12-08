@@ -9,6 +9,7 @@ async function init() {
 	await fs.ensureDir(outputFolder);
 
 	// Copy code
+	await fs.copy(path.join(__dirname, 'README.md'), path.join(outputFolder, 'README.txt'));
 	await fs.copy(path.join(__dirname, 'index.js'), path.join(outputFolder, 'index.js'));
 	await fs.copy(path.join(__dirname, 'spam'), path.join(outputFolder, 'spam'));
 	await fs.copy(path.join(__dirname, 'node_modules'), path.join(outputFolder, 'node_modules'));
