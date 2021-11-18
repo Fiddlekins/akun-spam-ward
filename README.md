@@ -24,7 +24,7 @@ Automated detection and rejection of the undesirables
  ya9v6ZAGRYNnoT9ay
  ```
 
-Using that information, you would make the contents of `credentials.json` look like
+Using that information, you would make the contents of `wardedStories.json` look like
 ```
 [
     "ya9v6ZAGRYNnoT9ay"
