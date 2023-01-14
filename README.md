@@ -4,6 +4,8 @@ Automated detection and rejection of the undesirables
 
 ## How to use
 
+Download the zip from [here](https://github.com/Fiddlekins/akun-spam-ward/releases/latest) and extract it anywhere.
+
 ### First you need to configure two files:
 
 `credentials.json` needs to have the username and password of the account you wish to run this tool with.
