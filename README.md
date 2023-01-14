@@ -29,7 +29,7 @@ the story ID is
  ya9v6ZAGRYNnoT9ay
  ```
 
-Using that information, you would make the contents of `credentials.json` look like
+Using that information, you would make the contents of `wardedStories.json` look like
 
 ```
 [
