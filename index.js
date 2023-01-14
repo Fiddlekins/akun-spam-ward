@@ -18,10 +18,11 @@ async function getSpamPatterns() {
 	const filenames = await fs.readdir(inputDir);
 	return Promise.all(filenames.map(async (filename) => {
 			const content = await fs.readFile(path.join(inputDir, filename), 'utf8');
+			const isRegex = path.extname(filename) === '.regex';
 			return {
 				name: filename,
-				pattern: new RegExp(escapeRegExp(content))
-			}
+				pattern: isRegex ? new RegExp(content, 'i') : new RegExp(escapeRegExp(content), 'i')
+			};
 		})
 	);
 }
@@ -39,6 +40,23 @@ async function ward(akun, storyId, spamPatterns) {
 			}
 		}
 	};
+	const handleChoiceNode = (node) => {
+		if (node.type !== 'choice') {
+			return;
+		}
+		for (let choiceId = 0; choiceId < node.choiceValues.length; choiceId++) {
+			const choiceValue = node.choiceValues[choiceId];
+			for (const spamPattern of spamPatterns) {
+				if (spamPattern.pattern.test(choiceValue)) {
+					log(`Ward pattern "${spamPattern.name}" caught choice node id "${node.id}" with choice id "${choiceId}" and choice starting:\n${choiceValue.slice(0, 100)}`);
+					if (!isDryRun) {
+						akun.removeChoiceNodeChoice(node.id, choiceId, 'akun-spam-ward').catch(log);
+					}
+					break;
+				}
+			}
+		}
+	};
 	let client;
 	try {
 		client = await akun.join(storyId);
@@ -48,6 +66,8 @@ async function ward(akun, storyId, spamPatterns) {
 	}
 	client.chatThread.on('chat', handleChatNode);
 	client.chatThread.history.nodes.forEach(handleChatNode);
+	client.storyThread.on('choiceUpdated', handleChoiceNode);
+	client.storyThread.history.nodes.forEach(handleChoiceNode);
 }
 
 async function init() {

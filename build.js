@@ -6,6 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function init() {
 	const outputFolder = path.join(__dirname, 'dest');
+	await fs.remove(outputFolder);
 	await fs.ensureDir(outputFolder);
 
 	// Copy code

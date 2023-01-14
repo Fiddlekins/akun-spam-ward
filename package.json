@@ -1,6 +1,6 @@
 {
   "name": "akun-spam-ward",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Automated detection and rejection of the undesirables",
   "main": "index.js",
   "type": "module",
@@ -15,10 +15,10 @@
     "type": "git",
     "url": "https://github.com/Fiddlekins/akun-spam-ward.git"
   },
-  "author": "",
+  "author": "Fiddlekins",
   "license": "ISC",
   "dependencies": {
-    "akun-api": "git+https://github.com/Fiddlekins/akun-api.git#4.2.0",
+    "akun-api": "git+https://github.com/Fiddlekins/akun-api.git#5.1.0",
     "fs-extra": "^8.1.0",
     "lodash.escaperegexp": "^4.1.2"
   }
